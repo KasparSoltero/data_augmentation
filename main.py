@@ -15,13 +15,13 @@ for directory in directories_to_clear:
 # load the song files
 songs = AudioProcessor('./songs_real')
 # normalize the song files
-songs.normalize_audio_rms(per_second=True, new_directory='./songs_normalized')
+songs.normalize_audio_rms(per_second=False, new_directory='./songs_normalized')
 songs = AudioProcessor('./songs_normalized')
 
 # load the noise files
 noise = AudioProcessor('./noise_real')
 # normalize the noise files to 200 rms per second power
-noise = noise.normalize_audio_rms(per_second=True, target_rms=200, new_directory='./noise_normalized')
+noise = noise.normalize_audio_rms(per_second=False, target_rms=200, new_directory='./noise_normalized')
 # segment the noise files to 5 second segments
 AudioProcessor('./noise_normalized').segment_audio_files(5, new_directory='./noise_segments')
 noise = AudioProcessor('./noise_segments')

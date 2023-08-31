@@ -204,8 +204,8 @@ class AudioProcessor:
             else:
                 audio.export(os.path.join(new_directory, os.path.basename(file)), format='wav')
  
-    def normalize_audio_rms(self, new_directory='', target_rms=1000, per_second=False):
-        # audio clips should be same length with no silence, for different length clips set per_second=True
+    def normalize_audio_rms(self, new_directory='', target_rms=1000):
+        # audio clips should contain no silence
         if not os.path.exists(new_directory):
             os.makedirs(new_directory, exist_ok=True)
             print('Created new directory')
@@ -221,29 +221,8 @@ class AudioProcessor:
                 normalized_audio = audio
 
             else:
-                if per_second:
-                    length_of_segment = 500 # ms
-                    samples_per_segment = int(length_of_segment * audio.frame_rate / 1000)
-                    num_segments = int(len(audio) / length_of_segment)
-
-                    print(f'audio of length {len(audio)} will be normalised in {num_segments} segments of length {length_of_segment}')
-                    
-                    normalized_audio = AudioSegment.silent(duration=len(audio))
-
-                    for i in range(num_segments):
-                        start_idx = i * samples_per_segment
-                        end_idx = start_idx + samples_per_segment
-                        
-                        segment = audio[start_idx:end_idx]
-                        current_rms = segment.rms
-                        
-                        gain_dB = 20 * math.log10(target_rms / current_rms)
-                        normalized_segment = segment.apply_gain(gain_dB)
-                        
-                        normalized_audio.overlay(normalized_segment, position=start_idx)
-                else:
-                    gain_dB = 20 * math.log10(target_rms / current_rms)
-                    normalized_audio  = audio.apply_gain(gain_dB)
+                gain_dB = 20 * math.log10(target_rms / current_rms)
+                normalized_audio  = audio.apply_gain(gain_dB)
 
             if new_directory != '':
                 normalized_audio.export(os.path.join(new_directory, os.path.basename(file)), format='wav')
